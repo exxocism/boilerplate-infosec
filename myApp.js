@@ -3,11 +3,18 @@ const helmet = require('helmet');
 const app = express();
 //require('dotenv').config();
 
+const ninetyDaysInSeconds = 90*24*60*60;
+
 app.use(helmet.hidePoweredBy());
 app.use(helmet.frameguard({ action: 'deny' }));
 app.use(helmet.xssFilter());
 app.use(helmet.noSniff());
 app.use(helmet.ieNoOpen());
+app.use(helmet.hsts({maxAge: ninetyDaysInSeconds, force: true}));
+app.use(helmet.dnsPrefetchControl());
+app.use(helmet.noCache());
+app.use(helmet.contentSecurityPolicy( {directives: { defaultSrc: ["'self'"], scriptSrc: ["'self'", "trusted-cdn.com"]}} ));
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
