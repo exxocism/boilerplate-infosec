@@ -1,7 +1,29 @@
 const express = require('express');
+const helmet = require('helmet');
 const app = express();
 
+app.use(helmet.hidePoweredBy());
+app.use(helmet.frameguard({ action: 'deny' }));
+app.use(helmet.xssFilter());
+app.use(helmet.noSniff());
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use( (req, res, next) => {
+  console.log(`${req.method} ${req.path} - ${req.ip}`);
+  switch( req.method )
+  {
+    case "GET":
+      console.dir( req.query );
+      break;
+    case "POST":
+    case "PUT":
+    case "DELETE":
+      console.dir( req.body );
+  }
+  next();
+});
 
 
 
